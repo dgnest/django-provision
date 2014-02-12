@@ -1,0 +1,7 @@
+---
+
+- name: Installs nginx web server
+  apt: pkg=nginx state=latest update_cache=true
+  sudo: yes
+  notify:
+    - start nginx

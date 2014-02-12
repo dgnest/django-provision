@@ -1,0 +1,5 @@
+---
+- name: Set up nginx, django
+  hosts: all
+  roles:
+    - role: nginx
