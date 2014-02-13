@@ -3,3 +3,6 @@
 /.bundle
 /.vagrant
 /.vagrantfile
+
+# Ignore virtualenv
+/venv
