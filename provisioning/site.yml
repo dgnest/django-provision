@@ -1,4 +1,10 @@
 ---
+
+- name: Update server and install utils
+  hosts: all
+  roles:
+    - role: common
+
 - name: Set up nginx, django
   hosts: all
   roles:
