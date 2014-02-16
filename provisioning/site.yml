@@ -5,7 +5,12 @@
   roles:
     - role: common
 
-- name: Set up nginx, django
+- name: Install packages needed for python development
+  hosts: all
+  roles:
+    - role: python-utils
+
+- name: Set up nginx
   hosts: all
   roles:
     - role: nginx
