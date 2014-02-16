@@ -4,10 +4,6 @@
   apt: update_cache=yes
   sudo: yes
 
-#- name: Update all packages to the latest version
-#  apt: upgrade=dist
-#  sudo: yes
-
 - name: Install git
   apt: pkg=git state=latest
   sudo: yes
@@ -36,3 +32,21 @@
     - zip
     - rsync
     - wget
+    - cron
+
+
+- name: Install packages needed for python development
+  apt: pkg={{ item }} state=latest
+  sudo: yes
+  with_items:
+    - python-setuptools
+    - python-dev
+    - build-essential
+
+- name: Install pip
+  apt: pkg=python-pip  state=latest
+  sudo: yes
+
+- name: Install virtualenv via pip
+  pip: name=virtualenv
+  sudo: yes
