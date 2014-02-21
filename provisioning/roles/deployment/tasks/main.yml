@@ -1,0 +1,4 @@
+---
+
+- name: read-write git checkout from github
+  git: repo={{ repository }} dest=/home/site
