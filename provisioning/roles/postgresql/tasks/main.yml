@@ -1,0 +1,29 @@
+---
+
+- name: Install postgresql
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - libpq-dev
+
+- name: Required for python
+  pip: name=psycopg2
+
+- name: Create a new database with name "db"
+  sudo_user: postgres
+  postgresql_db: name=db
+
+- name: Ensure user has access to database
+  sudo_user: postgres
+  postgresql_user:
+    db: db
+    name: dgnest
+    password: dgnest
+    priv: ALL
+
+- name: Ensure user does have privileges
+  sudo_user: postgres
+  postgresql_user:
+    name: dgnest
+    role_attr_flags: SUPERUSER, CREATEDB
