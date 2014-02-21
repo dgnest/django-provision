@@ -2,25 +2,17 @@
 
 - name: update apt cache
   apt: update_cache=yes
-  sudo: yes
 
 - name: Install git
   apt: pkg=git state=latest
-  sudo: yes
-
-- name: Install vim
-  apt: pkg=vim state=latest
-  sudo: yes
 
 - name: Install fail2ban
   apt: pkg=git state=latest
-  sudo: yes
   notify:
     - ensure fail2ban
 
 - name: install packages
   apt: pkg={{ item }} state=latest
-  sudo: yes
   with_items:
     - build-essential
     - tree
@@ -33,3 +25,6 @@
     - rsync
     - wget
     - cron
+
+- name: Install vim
+  apt: pkg=vim state=latest
