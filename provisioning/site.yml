@@ -2,6 +2,7 @@
 
 - name: Update server and install utils
   hosts: all
+  sudo: yes
   roles:
     - role: common
 
@@ -14,3 +15,14 @@
   hosts: all
   roles:
     - role: nginx
+
+- name: Set up PostgreSQL
+  hosts: all
+  sudo: yes
+  roles:
+    - role: postgresql
+
+- name: Deployment
+  hosts: all
+  roles:
+    - role: deployment
