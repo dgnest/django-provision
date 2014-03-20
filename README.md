@@ -1,14 +1,14 @@
-Provisioning
-============
+Provisioning with Ansible into a Vagrant VM
+===========================================
 
-Into vagrant:
+Provisioning into vagrant:
 
 ```bash
 $ vagrant up
 $ vagrant provision
 ```
 
-Into a VPS:
+Provisioning into a VPS:
 
 ```bash
 $ ansible-playbook site.yml
