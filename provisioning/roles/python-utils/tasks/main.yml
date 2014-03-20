@@ -4,9 +4,25 @@
   apt: pkg={{ item }} state=latest
   sudo: yes
   with_items:
+    - build-essential
     - python-setuptools
     - python-dev
-    - build-essential
+    - python2.7-dev
+    - python-software-properties
+    - libpq-dev
+
+- name: Install third-party libraries
+  apt: pkg={{ item }} state=latest
+  sudo: yes
+  with_items:
+    - libtiff4-dev
+    - libjpeg8-dev
+    - zlib1g-dev
+    - libfreetype6-dev
+    - liblcms2-dev
+    - libwebp-dev
+    - tcl8.5-dev
+    - tk8.5-dev
 
 - name: Install pip
   apt: pkg=python-pip  state=latest
