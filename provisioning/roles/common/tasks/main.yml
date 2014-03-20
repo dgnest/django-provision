@@ -25,6 +25,8 @@
     - rsync
     - wget
     - cron
+    - xclip
+    - keychain
 
 - name: Install vim
   apt: pkg=vim state=latest

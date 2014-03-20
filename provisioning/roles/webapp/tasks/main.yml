@@ -2,3 +2,6 @@
 
 - name: Creates main directory
   file: path=/webapp state=directory
+
+- name: Append a line of code in bashrc to use keychain. Avoid ssh passphrase
+  lineinfile: dest=~/.bashrc line="eval `keychain --eval id_rsa`" owner=root

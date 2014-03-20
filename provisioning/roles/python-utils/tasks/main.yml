@@ -4,7 +4,6 @@
   apt: pkg={{ item }} state=latest
   sudo: yes
   with_items:
-    - build-essential
     - python-setuptools
     - python-dev
     - python2.7-dev

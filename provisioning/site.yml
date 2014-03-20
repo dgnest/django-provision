@@ -22,7 +22,7 @@
   roles:
     - role: postgresql
 
-- name: Setup webapp 
+- name: Setup webapp
   hosts: all
   sudo: yes
   roles:
