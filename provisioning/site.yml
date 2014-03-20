@@ -21,8 +21,3 @@
   sudo: yes
   roles:
     - role: postgresql
-
-- name: Deployment
-  hosts: all
-  roles:
-    - role: deployment
