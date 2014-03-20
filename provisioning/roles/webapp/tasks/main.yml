@@ -1,0 +1,4 @@
+---
+
+- name: Creates main directory
+  file: path=/webapp state=directory
