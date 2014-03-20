@@ -21,3 +21,9 @@
   sudo: yes
   roles:
     - role: postgresql
+
+- name: Setup webapp 
+  hosts: all
+  sudo: yes
+  roles:
+    - role: webapp
