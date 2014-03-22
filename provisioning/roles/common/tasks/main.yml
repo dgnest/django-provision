@@ -1,7 +1,7 @@
 ---
 
-- name: update apt cache
-  apt: update_cache=yes cache_valid_time=3600
+- name: update apt cache and all packages to the latest version
+  apt: upgrade=dist update_cache=yes cache_valid_time=43200
 
 - name: Install git
   apt: pkg=git state=latest
@@ -25,7 +25,6 @@
     - rsync
     - wget
     - cron
-    - xclip
     - keychain
 
 - name: Install vim

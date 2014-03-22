@@ -2,7 +2,6 @@
 
 - name: Install packages needed for python development
   apt: pkg={{ item }} state=latest
-  sudo: yes
   with_items:
     - python-setuptools
     - python-dev
@@ -12,7 +11,6 @@
 
 - name: Install third-party libraries
   apt: pkg={{ item }} state=latest
-  sudo: yes
   with_items:
     - libtiff4-dev
     - libjpeg8-dev
@@ -24,9 +22,20 @@
     - tk8.5-dev
 
 - name: Install pip
-  apt: pkg=python-pip  state=latest
-  sudo: yes
+  apt: pkg=python-pip state=latest
+
+- name: Install pip
+  pip: name=pip state=latest
 
 - name: Install virtualenv via pip
   pip: name=virtualenv
-  sudo: yes
+
+- name: Install virtualenvwrapper via pip
+  pip: name=virtualenvwrapper
+
+- name: Shell startup file for virtualenvwrapper
+  lineinfile: dest=~/.bashrc line="$item" owner=root
+  with_items:
+    - "export WORKON_HOME=$HOME/.virtualenvs"
+    - "export PROJECT_HOME=/webapp"
+    - "source /usr/local/bin/virtualenvwrapper.sh"

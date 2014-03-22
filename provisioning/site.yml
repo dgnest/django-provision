@@ -8,11 +8,13 @@
 
 - name: Install packages needed for python development
   hosts: all
+  sudo: yes
   roles:
     - role: python-utils
 
 - name: Set up nginx
   hosts: all
+  sudo: yes
   roles:
     - role: nginx
 
