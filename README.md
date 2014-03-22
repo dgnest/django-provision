@@ -59,12 +59,12 @@ Guest machine (vagrant)
 
 ```bash
 $ python manage.py runserver 0.0.0.0:8000
-$ python manage.py runserver 192.168.33.10:8000
+$ python manage.py runserver 192.168.111.222:8000
 ```
 
 To check in the browser's host machine:
 
 ```bash
-192.168.33.10:8000
+192.168.111.222
 ```
 ---
