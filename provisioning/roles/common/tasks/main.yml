@@ -7,7 +7,7 @@
   apt: pkg=git state=latest
 
 - name: Install fail2ban
-  apt: pkg=git state=latest
+  apt: pkg=fail2ban state=latest
   notify:
     - ensure fail2ban
 
