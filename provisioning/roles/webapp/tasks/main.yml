@@ -1,7 +1,39 @@
 ---
 
-- name: Creates main directory
-  file: path=/webapp state=directory
-
 - name: Append a line of code in bashrc to use keychain. Avoid ssh passphrase
-  lineinfile: dest=~/.bashrc line="eval `keychain --eval id_rsa`" owner=root
+  lineinfile: 
+    dest: "/home/{{ user }}/.bashrc"
+    line: "eval `keychain --eval id_rsa`"
+
+- name: Restart bashrc
+  raw: "source /home/{{ user }}/.bashrc" 
+
+- name: send public key to remote deploy user
+  copy: 
+    src: '~/.ssh/id_rsa'
+    dest: "/home/{{ user }}/.ssh/id_rsa"
+
+- name: send private key to remote deploy user
+  copy: 
+    src: '~/.ssh/id_rsa.pub'
+    dest: "/home/{{ user }}/.ssh/id_rsa.pub"
+
+- name: send public key to root user
+  sudo_user: root 
+  copy: 
+    src: '~/.ssh/id_rsa'
+    dest: "/root/.ssh/id_rsa"
+
+- name: send private key to root user 
+  sudo_user: root 
+  copy: 
+    src: '~/.ssh/id_rsa.pub'
+    dest: "/root/.ssh/id_rsa.pub"
+
+- name: read-write git checkout from repo  
+  sudo_user: "{{ user }}"                                 
+  git: 
+    repo: "{{ repository }}" 
+    dest: "/home/{{ user }}/{{ repository_name }}"
+    key_file: "/home/{{ user }}/.ssh/id_rsa"
+    accept_hostkey: yes
