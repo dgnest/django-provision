@@ -1,5 +1,11 @@
 ---
 
+- name: Defining users
+  hosts: all
+  sudo: yes
+  roles:
+    - role: users
+
 - name: Update server and install utils
   hosts: all
   sudo: yes

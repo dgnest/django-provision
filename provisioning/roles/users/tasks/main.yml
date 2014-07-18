@@ -1,0 +1,39 @@
+---
+
+- name: Change root password
+  user:
+    name: root
+    password: '{{ root_password }}'
+    shell: /bin/bash
+
+- name: Create new linux user 
+  user: 
+    name: "{{ user }}"
+    password: "{{ password }}"
+    shell: /bin/bash
+
+- name: Create a 2048-bit SSH key for the new user
+  user: 
+    name: "{{ item }}" 
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+  with_items:
+    - "{{ user }}"
+    - root
+
+- name: 
+  authorized_key: 
+    user: "{{ item }}"
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  with_items:
+    - "{{ user }}"
+    - root
+
+- name: Add new user to sudoers
+  lineinfile:
+    "dest=/etc/sudoers
+    regexp='root    ALL=(ALL:ALL) ALL'
+    line='{{ user }} ALL=(ALL:ALL) ALL'
+    state=present"
+  notify:
+    - restart ssh
