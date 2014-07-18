@@ -1,4 +1,4 @@
-# -*- mode: ruby -*-
+# *- mode: ruby -*-
 # vi: set ft=ruby :
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
@@ -44,6 +44,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Ansible configuration.
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "provisioning/site.yml"
+    ansible.verbose =  'vvvv'
   end
 
   # Provider-specific configuration so you can fine-tune various
