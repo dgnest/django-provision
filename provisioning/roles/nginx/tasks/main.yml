@@ -4,3 +4,8 @@
   apt: pkg=nginx state=latest
   notify:
     - start nginx
+
+- name: setup nginx configuratioin
+  template: src=django dest='/etc/nginx/sites-enabled/django'
+  notify:
+    - restart nginx
