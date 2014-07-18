@@ -1,0 +1,17 @@
+# Linux user.
+user: "{{ lookup('env','USER') }}"
+# User password. 
+password: "{{ lookup('env','PASSWORD') }}"
+root_password: "{{ lookup('env','ROOT_PASSWORD') }}"
+
+# Postgres rol. 
+psql_role: "{{ lookup('env','POSTGRES_ROLE') }}"
+psql_role_password: "{{ lookup('env','POSTGRES_ROLE_PASSWORD') }}" 
+# Postgres database.
+db_name: "{{ lookup('env','DB_NAME') }}"
+db_host: "{{ lookup('env','DB_HOST') }}"
+db_port: "{{ lookup('env','DB_PORT') }}"
+
+# Git repository.
+repository: "{{ lookup('env','REPOSITORY') }}"
+repository_name: "{{ lookup('env','REPOSITORY_NAME') }}"
