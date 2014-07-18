@@ -34,8 +34,10 @@
   pip: name=virtualenvwrapper
 
 - name: Shell startup file for virtualenvwrapper
-  lineinfile: dest=~/.bashrc line="$item" owner=root
+  lineinfile: 
+    dest: "/home/{{ user }}/.bashrc"
+    line: "{{ item }}" 
   with_items:
     - "export WORKON_HOME=$HOME/.virtualenvs"
-    - "export PROJECT_HOME=/webapp"
+    - "export PROJECT_HOME=/home/{{ repository }}"
     - "source /usr/local/bin/virtualenvwrapper.sh"
