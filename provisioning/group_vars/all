@@ -21,3 +21,4 @@ db_port: "{{ lookup('env','DB_PORT') }}"
 # Git repository.
 repository: "{{ lookup('env','REPOSITORY') }}"
 repository_name: "{{ lookup('env','REPOSITORY_NAME') }}"
+deployment_branch: "{{ lookup('env','DEPLOYMENT_BRANCH') }}"
