@@ -5,7 +5,7 @@
   notify:
     - start nginx
 
-- name: setup nginx configuratioin
+- name: setup nginx configuration
   template: src=django dest='/etc/nginx/sites-enabled/django'
   notify:
     - restart nginx
