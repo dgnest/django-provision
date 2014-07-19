@@ -29,6 +29,38 @@
     - "{{ user }}"
     - root
 
+- name: Append a line of code in bashrc to use keychain. Avoid ssh passphrase.
+  lineinfile: 
+    dest: "/home/{{ user }}/.bashrc"
+    line: "eval `keychain --eval id_rsa`"
+
+# SSH agent forwarding for deploy user.
+- name: send public key to remote deploy user
+  copy: 
+    src: '~/.ssh/id_rsa'
+    dest: "/home/{{ user }}/.ssh/id_rsa"
+
+- name: send private key to remote deploy user
+  copy: 
+    src: '~/.ssh/id_rsa.pub'
+    dest: "/home/{{ user }}/.ssh/id_rsa.pub"
+
+# SSH agent forwarding for root user, not necessary just in case.
+- name: send public key to root user
+  sudo_user: root 
+  copy: 
+    src: '~/.ssh/id_rsa'
+    dest: "/root/.ssh/id_rsa"
+
+- name: send private key to root user 
+  sudo_user: root 
+  copy: 
+    src: '~/.ssh/id_rsa.pub'
+    dest: "/root/.ssh/id_rsa.pub"
+
+- name: Restart bashrc
+  raw: "source /home/{{ user }}/.bashrc" 
+
 - name: Add new user to sudoers
   lineinfile:
     "dest=/etc/sudoers
@@ -37,3 +69,5 @@
     state=present"
   notify:
     - restart ssh
+
+

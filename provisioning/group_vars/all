@@ -4,6 +4,12 @@ user: "{{ lookup('env','USER') }}"
 password: "{{ lookup('env','PASSWORD') }}"
 root_password: "{{ lookup('env','ROOT_PASSWORD') }}"
 
+# Api keys local filepath.
+api_key_filepath: "{{ lookup('env','API_KEY_LOCALPATH') }}"
+# RSA keys for SSH authentication.
+rsa_pub_key_filepath: "{{ lookup('env','RSA_PUB_KEY_LOCALPATH') }}"
+rsa_priv_key_filepath: "{{ lookup('env','RSA_PRIV_KEY_LOCALPATH') }}"
+
 # Postgres rol. 
 psql_role: "{{ lookup('env','POSTGRES_ROLE') }}"
 psql_role_password: "{{ lookup('env','POSTGRES_ROLE_PASSWORD') }}" 
