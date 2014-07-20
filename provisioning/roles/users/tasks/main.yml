@@ -65,3 +65,10 @@
   copy: 
     src: '{{ rsa_pub_key_filepath }}'
     dest: "/root/.ssh/id_rsa.pub"
+
+- name: add enviroment variables to user env
+  sudo_user: "{{ user }}"
+  raw: "ssh-keyscan -H {{ remote_host }} >> $HOME/.ssh/known_hosts"
+
+- name: add enviroment variables to user env
+  raw: "ssh-keyscan -H {{ remote_host }} >> /etc/ssh/ssh_known_hosts"
