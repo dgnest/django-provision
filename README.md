@@ -1,3 +1,13 @@
+About
+=====
+
+This repo is an [in-house project](http://dgnest.com) made with ♥ that tries to make our live easier. You don't know how much time we wasted doing this stuff by hand few years ago. So, be patient, we are still working on it.
+
+Features:
+
++ Deployment server: **Ubuntu 12.04 LTS**
+
+
 Getting started
 ===============
 
