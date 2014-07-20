@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Provisioning a VPS to Run Django with Ansible  by dgnest</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Provisioning a VPS to Run Django with Ansible </h1>
+        <h2>breaking eggs with ansible</h2>
+        <a href="https://github.com/dgnest/django-provision" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h1>
+
+<p>In order to provision. First we have to <a href="https://help.github.com/articles/generating-ssh-keys">generate our ssh keys.</a>
+Then copy your SSH public key and put into your remote repository for SSH deployment. 
+I forgot, we will use <a href="https://developer.github.com/guides/managing-deploy-keys/#ssh-agent-forwarding">SSH agent forwarding</a> strategy to deploy our keys.</p>
+
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span>cat ~/.ssh/id_rsa.pub
+</pre></div>
+
+<p>This procedure is executed just once.</p>
+
+<h1>
+<a name="prepare-the-nest" class="anchor" href="#prepare-the-nest"><span class="octicon octicon-link"></span></a>Prepare the Nest</h1>
+
+<p>Set your local environment with the variables below. I strongly recommend 
+to use <a href="http://virtualenvwrapper.readthedocs.org/en/latest/">virtualenvwrapper</a> 
+for this purpose. I am using it and all my virtualenv variables are set into 
+the <em>postactivate</em> script.</p>
+
+<div class="highlight highlight-bash"><pre><span class="c"># Linux User.</span>
+<span class="nb">export </span><span class="nv">USER</span><span class="o">=</span>mynewuser
+...
+</pre></div>
+
+<p>Check <a href="http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module">this</a> out in order to generate user passwords.</p>
+
+<div class="highlight highlight-bash"><pre>...
+<span class="nb">export </span><span class="nv">PASSWORD</span><span class="o">=</span><span class="s1">'$6$rounds=100000$.8vhLbNWv7YaHkVb$ALN9H7/4qzVPO83eT1tiT5o4EI9EpBuOo6B53JYcDEXU5Tn2ZMbdlxOCkCaHDnDeJenURpZaX5L3GGlW03s/d1'</span>
+<span class="nb">export </span><span class="nv">ROOT_PASSWORD</span><span class="o">=</span><span class="s1">'$6$rounds=100000$.8vhLbNWv7YaHkVb$ALN9H7/4qzVPO83eT1tiT5o4EI9EpBuOo6B53JYcDEXU5Tn2ZMbdlxOCkCaHDnDeJenURpZaX5L3GGlW03s/d1'</span>
+
+<span class="c"># Api keys local filepath.</span>
+<span class="nb">export </span><span class="nv">API_KEY_LOCALPATH</span><span class="o">=</span><span class="s1">'~/.virtualenvs/dgnest/bin/postactivate'</span>
+<span class="c"># RSA keys for SSH authentication.</span>
+<span class="nb">export </span><span class="nv">RSA_PUB_KEY_LOCALPATH</span><span class="o">=</span><span class="s1">'~/.ssh/id_rsa.pub'</span>
+<span class="nb">export </span><span class="nv">RSA_PRIV_KEY_LOCALPATH</span><span class="o">=</span><span class="s1">'~/.ssh/id_rsa'</span>
+
+<span class="c"># Postgres rol.</span>
+<span class="nb">export </span><span class="nv">POSTGRES_ROLE</span><span class="o">=</span>mynewrol
+...
+</pre></div>
+
+<p>Check <a href="http://docs.ansible.com/postgresql_user_module.html">this</a> out to generate encrypted passwords.</p>
+
+<div class="highlight highlight-bash"><pre>...
+<span class="nb">export </span><span class="nv">POSTGRES_ROLE_PASSWORD</span><span class="o">=</span>mypassword
+<span class="c"># Postgres database.</span>
+<span class="nb">export </span><span class="nv">DB_NAME</span><span class="o">=</span>mydb
+<span class="nb">export </span><span class="nv">DB_HOST</span><span class="o">=</span>localhost
+<span class="nb">export </span><span class="nv">DB_PORT</span><span class="o">=</span>5432
+
+<span class="c"># Git Repo.</span>
+<span class="nb">export </span><span class="nv">REPOSITORY</span><span class="o">=</span><span class="s2">"git@remote-host.com:username/myrepo.git"</span>
+<span class="nb">export </span><span class="nv">REPOSITORY_NAME</span><span class="o">=</span><span class="s2">"myrepo"</span>
+<span class="nb">export </span><span class="nv">DEPLOYMENT_BRANCH</span><span class="o">=</span><span class="s2">"master"</span>
+<span class="nb">export </span><span class="nv">REMOTE_HOST</span><span class="o">=</span><span class="s2">"remote-host.com"</span>
+</pre></div>
+
+<p>All these enviroment variables are mapped into the file 
+<em>provisioning/group_vars/all</em>. So you are free to modify it. </p>
+
+<h1>
+<a name="provisioning-with-ansible-into-a-virtual-machine-vm-using-vagrant" class="anchor" href="#provisioning-with-ansible-into-a-virtual-machine-vm-using-vagrant"><span class="octicon octicon-link"></span></a>Provisioning with Ansible into a Virtual Machine (VM) using vagrant:</h1>
+
+<div class="highlight highlight-bash"><pre><span class="c"># Bringing VM 'default' up with 'virtualbox' provider.</span>
+<span class="nv">$ </span>vagrant up
+<span class="c"># Provision our VM with ansible.</span>
+<span class="nv">$ </span>vagrant provision
+</pre></div>
+
+<p>More info:</p>
+
+<ul>
+<li><a href="http://docs.ansible.com/guide_vagrant.html">Ansible DOC</a></li>
+<li><a href="http://docs.vagrantup.com/v2/provisioning/ansible.html">Vagran DOC</a></li>
+</ul><h1>
+<a name="provisioning-with-ansible-into-a-vps" class="anchor" href="#provisioning-with-ansible-into-a-vps"><span class="octicon octicon-link"></span></a>Provisioning with Ansible into a VPS:</h1>
+
+<p>Before this step, you need to <a href="http://docs.ansible.com/intro_inventory.html">set your inventory</a>. 
+Then, go inside the directory named <strong>provisioning</strong> and 
+<em>let the hacking begin</em> with this command.</p>
+
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span>ansible-playbook -vvvv -u remote_user_name --sudo site.yml
+<span class="c"># Examples:</span>
+<span class="nv">$ </span>ansible-playbook -vvvv -u root --sudo site.yml
+<span class="nv">$ </span>ansible-playbook -vvvv -u dgnest --sudo site.yml
+</pre></div>
+
+<h1>
+<a name="running-our-django-project" class="anchor" href="#running-our-django-project"><span class="octicon octicon-link"></span></a>Running our Django Project</h1>
+
+<p>Inside out guest machine (vagrant) run <em>su newuser</em> to login as our
+deployment user (newuser). Finally enter to the virtualenv and run the basics.</p>
+
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span><span class="nb">cd</span> ~ <span class="o">&amp;&amp;</span> <span class="nb">source </span>venv/bin/activate
+<span class="c"># Go inside your repo.</span>
+<span class="nv">$ </span>python manage.py runserver localhost:9000
+</pre></div>
+
+<p>To check in the browser's host machine:</p>
+
+<div class="highlight highlight-bash"><pre>192.168.33.10
+</pre></div>
+
+<hr>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/dgnest/django-provision/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/dgnest/django-provision/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/dgnest/django-provision"></a> is maintained by <a href="https://github.com/dgnest">dgnest</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
