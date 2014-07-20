@@ -1,26 +1,9 @@
-Initial Setup
-=============
+Getting started
+===============
 
-All the action here are executed as root. For this purpose try this:
-
-```bash
-$ sudo su
-```
-
-In order to provision, we had to generate our ssh keys first. Therefore,
-to generate a ssh key copy and paste the text below, substitute your email.
-
-```bash
-$ ssh-keygen -t rsa -C "your_email@example.com"
-```
-Next, you'll be asked to enter a passphrase (keychaing will do it for you later):
-
-```bash
-Enter passphrase (empty for no passphrase): [Type a passphrase]
-Enter same passphrase again: [Type passphrase again]
-```
-
-Then copy your SSH key and put into your remote repository for SSH deployment.
+In order to provision. First we have to [generate our ssh keys.](https://help.github.com/articles/generating-ssh-keys)
+Then copy your SSH public key and put into your remote repository for SSH deployment. 
+I forgot, we will use [SSH agent forwarding](https://developer.github.com/guides/managing-deploy-keys/#ssh-agent-forwarding) strategy to deploy our keys.
 
 ```bash
 $ cat ~/.ssh/id_rsa.pub
@@ -28,22 +11,68 @@ $ cat ~/.ssh/id_rsa.pub
 
 This procedure is executed just once.
 
----
+
+
+Prepare the Nest
+================
+
+Set your local environment with the variables below. I strongly recommend 
+to use [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/) 
+for this purpose. I am using it and all my virtualenv variables are set into 
+the *postactivate* script.
+
+```bash
+# Linux User.
+export USER=mynewuser
+...
+```
+Check [this](http://docs.ansible.com/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module) out in order to generate user passwords.
+
+```bash
+...
+export PASSWORD='$6$rounds=100000$.8vhLbNWv7YaHkVb$ALN9H7/4qzVPO83eT1tiT5o4EI9EpBuOo6B53JYcDEXU5Tn2ZMbdlxOCkCaHDnDeJenURpZaX5L3GGlW03s/d1'
+export ROOT_PASSWORD='$6$rounds=100000$.8vhLbNWv7YaHkVb$ALN9H7/4qzVPO83eT1tiT5o4EI9EpBuOo6B53JYcDEXU5Tn2ZMbdlxOCkCaHDnDeJenURpZaX5L3GGlW03s/d1'
+
+# Api keys local filepath.
+export API_KEY_LOCALPATH='~/.virtualenvs/dgnest/bin/postactivate'
+# RSA keys for SSH authentication.
+export RSA_PUB_KEY_LOCALPATH='~/.ssh/id_rsa.pub'
+export RSA_PRIV_KEY_LOCALPATH='~/.ssh/id_rsa'
+
+# Postgres rol.
+export POSTGRES_ROLE=mynewrol
+...
+```
+
+Check [this](http://docs.ansible.com/postgresql_user_module.html) out to generate encrypted passwords.
+
+```bash
+...
+export POSTGRES_ROLE_PASSWORD=mypassword
+# Postgres database.
+export DB_NAME=mydb
+export DB_HOST=localhost
+export DB_PORT=5432
+
+# Git Repo.
+export REPOSITORY="git@remote-host.com:username/myrepo.git"
+export REPOSITORY_NAME="myrepo"
+export DEPLOYMENT_BRANCH="master"
+export REMOTE_HOST="remote-host.com"
+```
+
+All these enviroment variables are mapped into the file 
+*provisioning/group_vars/all*. So you are free to modify it. 
+
 
 Provisioning with Ansible into a Virtual Machine (VM) using vagrant:
 ====================================================================
 
 ```bash
-# Bringing VM 'default' up with 'virtualbox' provider
+# Bringing VM 'default' up with 'virtualbox' provider.
 $ vagrant up
-# Provision VM with ansible
+# Provision our VM with ansible.
 $ vagrant provision
-```
-
-Provisioning into a VPS:
-
-```bash
-$ ansible-playbook site.yml
 ```
 
 More info:
@@ -51,20 +80,35 @@ More info:
 + [Ansible DOC](http://docs.ansible.com/guide_vagrant.html)
 + [Vagran DOC](http://docs.vagrantup.com/v2/provisioning/ansible.html)
 
+Provisioning with Ansible into a VPS:
+=====================================
 
-Running a Django Project
-========================
-
-Guest machine (vagrant)
+Before this step, you need to [set your inventory](http://docs.ansible.com/intro_inventory.html). 
+Then, go inside the directory named **provisioning** and 
+*let the hacking begin* with this command.
 
 ```bash
-$ python manage.py runserver 0.0.0.0:8000
-$ python manage.py runserver 192.168.111.222:8000
+$ ansible-playbook -vvvv -u remote_user_name --sudo site.yml
+# Examples:
+$ ansible-playbook -vvvv -u root --sudo site.yml
+$ ansible-playbook -vvvv -u dgnest --sudo site.yml
+```
+
+Running our Django Project
+=========================
+
+Inside out guest machine (vagrant) run *su newuser* to login as our
+deployment user (newuser). Finally enter to the virtualenv and run the basics.
+
+```bash
+$ cd ~ && source venv/bin/activate
+# Go inside your repo.
+$ python manage.py runserver localhost:9000
 ```
 
 To check in the browser's host machine:
 
 ```bash
-192.168.111.222
+192.168.33.10
 ```
 ---
