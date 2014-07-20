@@ -21,13 +21,21 @@
     - "{{ user }}"
     - root
 
-- name: 
+- name: Add user rsa public key to authorized users.
   authorized_key: 
     user: "{{ item }}"
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    key: "{{ lookup('file', 'rsa_pub_key_filepath') }}"
   with_items:
     - "{{ user }}"
     - root
+
+- name: Add new user to sudoers
+  lineinfile:
+    dest: '/etc/sudoers'
+    insertafter: '^root    ALL=(ALL:ALL) ALL'
+    line: '{{ user }} ALL=(ALL:ALL) ALL'
+  notify:
+    - restart ssh
 
 - name: Append a line of code in bashrc to use keychain. Avoid ssh passphrase.
   lineinfile: 
@@ -35,39 +43,25 @@
     line: "eval `keychain --eval id_rsa`"
 
 # SSH agent forwarding for deploy user.
-- name: send public key to remote deploy user
+- name: send private key to remote deploy user
   copy: 
     src: '~/.ssh/id_rsa'
     dest: "/home/{{ user }}/.ssh/id_rsa"
 
-- name: send private key to remote deploy user
+- name: send public key to remote deploy user
   copy: 
     src: '~/.ssh/id_rsa.pub'
     dest: "/home/{{ user }}/.ssh/id_rsa.pub"
 
 # SSH agent forwarding for root user, not necessary just in case.
-- name: send public key to root user
+- name: send private key to root user
   sudo_user: root 
   copy: 
-    src: '~/.ssh/id_rsa'
+    src: '{{ rsa_priv_key_filepath }}'
     dest: "/root/.ssh/id_rsa"
 
-- name: send private key to root user 
+- name: send public key to root user 
   sudo_user: root 
   copy: 
-    src: '~/.ssh/id_rsa.pub'
+    src: '{{ rsa_pub_key_filepath }}'
     dest: "/root/.ssh/id_rsa.pub"
-
-- name: Restart bashrc
-  raw: "source /home/{{ user }}/.bashrc" 
-
-- name: Add new user to sudoers
-  lineinfile:
-    "dest=/etc/sudoers
-    regexp='root    ALL=(ALL:ALL) ALL'
-    line='{{ user }} ALL=(ALL:ALL) ALL'
-    state=present"
-  notify:
-    - restart ssh
-
-

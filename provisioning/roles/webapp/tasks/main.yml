@@ -1,39 +1,36 @@
 ---
 
-- name: Append a line of code in bashrc to use keychain. Avoid ssh passphrase
-  lineinfile: 
-    dest: "/home/{{ user }}/.bashrc"
-    line: "eval `keychain --eval id_rsa`"
-
-- name: Restart bashrc
-  raw: "source /home/{{ user }}/.bashrc" 
-
-- name: send public key to remote deploy user
-  copy: 
-    src: '~/.ssh/id_rsa'
-    dest: "/home/{{ user }}/.ssh/id_rsa"
-
-- name: send private key to remote deploy user
-  copy: 
-    src: '~/.ssh/id_rsa.pub'
-    dest: "/home/{{ user }}/.ssh/id_rsa.pub"
-
-- name: send public key to root user
-  sudo_user: root 
-  copy: 
-    src: '~/.ssh/id_rsa'
-    dest: "/root/.ssh/id_rsa"
-
-- name: send private key to root user 
-  sudo_user: root 
-  copy: 
-    src: '~/.ssh/id_rsa.pub'
-    dest: "/root/.ssh/id_rsa.pub"
-
+# Previously implemented SSH agent forwarding inside users role.
 - name: read-write git checkout from repo  
   sudo_user: "{{ user }}"                                 
   git: 
     repo: "{{ repository }}" 
     dest: "/home/{{ user }}/{{ repository_name }}"
+    version: "{{ deployment_branch }}"
     key_file: "/home/{{ user }}/.ssh/id_rsa"
     accept_hostkey: yes
+
+- name: create virtualenv 
+  sudo_user: "{{ user }}"
+  shell: "virtualenv venv"
+  args:
+    chdir: "/home/{{ user }}"
+
+- name: install requirements into virtualenv 
+  sudo_user: "{{ user }}"
+  raw: "source /home/{{ user }}/venv/bin/activate && cd /home/{{ user }}/{{ repository_name }} && pip install -r requirements.txt"
+
+- name: copy api keys 
+  sudo_user: "{{ user }}" 
+  copy: 
+    src: '{{ api_key_filepath }}'
+    dest: "/home/{{ user }}/venv/.env"
+
+# Add enviroment variables
+- name: add enviroment variables to virtualenv
+  sudo_user: "{{ user }}"
+  raw: "cat $HOME/venv/.env >> $HOME/venv/bin/activate"
+
+- name: add enviroment variables to user env
+  sudo_user: "{{ user }}"
+  raw: "cat $HOME/venv/.env >> $HOME/.bashrc"
