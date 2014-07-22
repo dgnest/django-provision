@@ -44,7 +44,7 @@ export PASSWORD='$6$rounds=100000$.8vhLbNWv7YaHkVb$ALN9H7/4qzVPO83eT1tiT5o4EI9Ep
 export ROOT_PASSWORD='$6$rounds=100000$.8vhLbNWv7YaHkVb$ALN9H7/4qzVPO83eT1tiT5o4EI9EpBuOo6B53JYcDEXU5Tn2ZMbdlxOCkCaHDnDeJenURpZaX5L3GGlW03s/d1'
 
 # Api keys local filepath.
-export API_KEY_LOCALPATH='~/.virtualenvs/dgnest/bin/postactivate'
+export API_KEY_LOCALPATH='~/projects/django-provision/provisioning/config_keys'
 # RSA keys for SSH authentication.
 export RSA_PUB_KEY_LOCALPATH='~/.ssh/id_rsa.pub'
 export RSA_PRIV_KEY_LOCALPATH='~/.ssh/id_rsa'

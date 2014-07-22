@@ -1,3 +1,6 @@
+# Django configuration and keys
+config_keys
+
 # Ignore bundler config
 /bin
 /.bundle
