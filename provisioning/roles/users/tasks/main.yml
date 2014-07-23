@@ -32,7 +32,6 @@
 - name: Add new user to sudoers
   lineinfile:
     dest: '/etc/sudoers'
-    insertafter: '^root    ALL=(ALL:ALL) ALL'
     line: '{{ user }} ALL=(ALL:ALL) ALL'
   notify:
     - restart ssh
