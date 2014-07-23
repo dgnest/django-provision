@@ -30,6 +30,12 @@
   roles:
     - role: postgresql
 
+- name: Setup redis
+  hosts: all
+  sudo: yes
+  roles:
+    - role: redis
+
 - name: Setup webapp
   hosts: all
   sudo: yes

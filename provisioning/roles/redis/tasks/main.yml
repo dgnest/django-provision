@@ -1,0 +1,10 @@
+---
+
+- name: install packages
+  apt: pkg={{ item }} state=latest
+  register: redis_install
+  with_items:
+    - tcl8.5
+    - redis-server
+  notify:
+    - restart redis
