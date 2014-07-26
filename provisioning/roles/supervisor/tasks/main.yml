@@ -1,0 +1,4 @@
+---
+
+- name: installing supervisor
+  apt: pkg=supervisor state=latest

@@ -18,13 +18,13 @@
   roles:
     - role: python-utils
 
-- name: Set up nginx
+- name: Setup nginx
   hosts: all
   sudo: yes
   roles:
     - role: nginx
 
-- name: Set up PostgreSQL
+- name: Setup PostgreSQL
   hosts: all
   sudo: yes
   roles:
@@ -41,3 +41,9 @@
   sudo: yes
   roles:
     - role: webapp
+
+- name: Setup supervisor
+  hosts: all
+  sudo: yes
+  roles:
+    - role: supervisor
