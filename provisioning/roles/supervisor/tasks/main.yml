@@ -2,3 +2,37 @@
 
 - name: installing supervisor
   apt: pkg=supervisor state=latest
+
+- name: copy test template 
+  copy: 
+    src: '{{ api_key_filepath }}'
+    dest: "/home/{{ user }}/venv/.env"
+
+- name: create log directory
+  file: 
+    path: "/home/{{ user }}/logs"
+    state: "directory"
+
+- name: create log files
+  file: 
+    path: "/home/{{ user }}/logs/{{ item }}"
+    state: touch
+  with_items:
+    - 'long.err.log'
+    - 'long.out.log'
+
+- name: copy test template 
+  template: 
+    src: "{{ item }}"
+    dest: "/etc/supervisor/conf.d"
+  with_items:
+    - 'long_script.conf'
+  notify:
+    - restart supervisor 
+
+- name: manage the state of program to be in 'started' state. 
+  supervisorctl: 
+    name: "{{ item }}"
+    state: started
+  with_items:
+    - 'long_script'
