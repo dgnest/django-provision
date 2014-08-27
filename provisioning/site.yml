@@ -42,6 +42,18 @@
   roles:
     - role: webapp
 
+- name: Setup gunicorn scripts
+  hosts: all
+  sudo: yes
+  roles:
+    - role: gunicorn
+
+- name: Setup celery script
+  hosts: all
+  sudo: yes
+  roles:
+    - role: celery
+
 - name: Setup supervisor
   hosts: all
   sudo: yes

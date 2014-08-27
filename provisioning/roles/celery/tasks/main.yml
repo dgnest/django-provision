@@ -1,0 +1,7 @@
+---
+
+- name: copy celery config files 
+  template: 
+    src: "celery.sh"
+    dest: "/home/{{ user }}"
+    mode: 0755

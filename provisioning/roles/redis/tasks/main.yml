@@ -8,3 +8,10 @@
     - redis-server
   notify:
     - restart redis
+
+- name: copy config template 
+  template: 
+    src: "redis.conf"
+    dest: "/etc/redis/redis.conf"
+  notify:
+    - restart redis

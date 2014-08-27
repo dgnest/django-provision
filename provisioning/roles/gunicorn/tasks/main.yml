@@ -1,0 +1,12 @@
+---
+
+- name: copy gunicorn config files 
+  template: 
+    src: "gunicorn.sh"
+    dest: "/home/{{ user }}"
+    mode: 0755
+
+- name: copy gunicorn config files 
+  template: 
+    src: "gunicorn.conf.py"
+    dest: "/home/{{ user }}"

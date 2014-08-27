@@ -1,5 +1,10 @@
 ---
 
+- name: See if repo was cloned
+  stat: 
+    path: "/home/{{ user }}/{{ repository_name }}"
+  register: repo_cloned
+
 # Previously implemented SSH agent forwarding inside users role.
 - name: read-write git checkout from repo  
   sudo_user: "{{ user }}"                                 
@@ -9,28 +14,44 @@
     version: "{{ deployment_branch }}"
     key_file: "/home/{{ user }}/.ssh/id_rsa"
     accept_hostkey: yes
+  when: repo_cloned.stat.isdir is not defined
+
+- name: See if virtualenv was created
+  stat: 
+    path: "/home/{{ user }}/venv"
+  register: venv_created
 
 - name: create virtualenv 
   sudo_user: "{{ user }}"
   shell: "virtualenv venv"
   args:
     chdir: "/home/{{ user }}"
+  when: venv_created.stat.isdir is not defined
+
+- name: See if virtualenv was created
+  stat: 
+    path: "/home/{{ user }}/venv"
+  register: venv_created
 
 - name: install requirements into virtualenv 
   sudo_user: "{{ user }}"
   raw: "source /home/{{ user }}/venv/bin/activate && cd /home/{{ user }}/{{ repository_name }} && pip install -r requirements.txt"
+  when: venv_created.stat.isdir is defined
 
 - name: copy api keys 
   sudo_user: "{{ user }}" 
   copy: 
     src: '{{ api_key_filepath }}'
     dest: "/home/{{ user }}/venv/.env"
+  when: venv_created.stat.isdir is defined
 
 # Add enviroment variables
 - name: add enviroment variables to virtualenv
   sudo_user: "{{ user }}"
   raw: "cat $HOME/venv/.env >> $HOME/venv/bin/activate"
+  when: venv_created.stat.isdir is defined
 
 - name: add enviroment variables to user env
   sudo_user: "{{ user }}"
   raw: "cat $HOME/venv/.env >> $HOME/.bashrc"
+  when: venv_created.stat.isdir is defined

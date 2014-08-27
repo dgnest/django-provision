@@ -3,11 +3,6 @@
 - name: installing supervisor
   apt: pkg=supervisor state=latest
 
-- name: copy test template 
-  copy: 
-    src: '{{ api_key_filepath }}'
-    dest: "/home/{{ user }}/venv/.env"
-
 - name: create log directory
   file: 
     path: "/home/{{ user }}/logs"
@@ -18,15 +13,18 @@
     path: "/home/{{ user }}/logs/{{ item }}"
     state: touch
   with_items:
-    - 'long.err.log'
-    - 'long.out.log'
+    - 'gunicorn.err.log'
+    - 'gunicorn.out.log'
+    - 'celery.err.log'
+    - 'celery.out.log'
 
 - name: copy test template 
   template: 
     src: "{{ item }}"
     dest: "/etc/supervisor/conf.d"
   with_items:
-    - 'long_script.conf'
+    - 'gunicorn.conf'
+    - 'celery.conf'
   notify:
     - restart supervisor 
 
@@ -35,4 +33,5 @@
     name: "{{ item }}"
     state: started
   with_items:
-    - 'long_script'
+    - 'gunicorn'
+    - 'celery'
