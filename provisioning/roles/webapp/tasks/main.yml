@@ -28,10 +28,6 @@
     chdir: "/home/{{ user }}"
   when: venv_created.stat.isdir is not defined
 
-- name: See if virtualenv was created
-  stat: 
-    path: "/home/{{ user }}/venv"
-  register: venv_created
 
 - name: install requirements into virtualenv 
   sudo_user: "{{ user }}"
